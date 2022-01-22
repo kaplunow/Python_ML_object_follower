@@ -10,10 +10,10 @@ import torch.nn.functional as F
 import time
 
 class vision_mod():
-    def __init__(self):
+    def __init__(self, network_path, out_features_num, main_feature):
         self.model = torchvision.models.alexnet(pretrained=False)
-        self.model.classifier[6] = torch.nn.Linear(self.model.classifier[6].in_features, 3)
-        self.model.load_state_dict(torch.load('best_model_laptop_farm.pth'))
+        self.model.classifier[6] = torch.nn.Linear(self.model.classifier[6].in_features, out_features_num)
+        self.model.load_state_dict(torch.load(network_path))
         self.model.eval()
         self.device = torch.device('cuda')
         self.model = self.model.to(self.device)  # place model on GPU
@@ -22,6 +22,7 @@ class vision_mod():
         self.stdev = 255.0 * np.array([0.229, 0.224, 0.225])
         self.normalize = torchvision.transforms.Normalize(self.mean, self.stdev)
         self.segment_dims = (74, 223)
+        self.main_feature = main_feature
     
     
     def deinit(self):
@@ -67,7 +68,7 @@ class vision_mod():
             frame_proc = self.preprocess(cv2.resize(sub_f, (224, 224)))
             y = self.model(frame_proc)
             y = F.softmax(y, dim=1)
-            prob = float(y.flatten()[0])
+            prob = float(y.flatten()[self.main_feature])
             if prob > 0.7:
                 draw_list.append(i)
                 break

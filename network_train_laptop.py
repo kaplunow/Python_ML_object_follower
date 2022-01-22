@@ -3,7 +3,7 @@ import torchvision
 
 # data import
 dataset = torchvision.datasets.ImageFolder(
-    'dataset_farm',  # folder name
+    'dataset',  # folder name
     torchvision.transforms.Compose([
         torchvision.transforms.ColorJitter(0.1, 0.1, 0.1, 0.1),
         torchvision.transforms.Resize((224, 224)),
@@ -32,13 +32,13 @@ test_loader = torch.utils.data.DataLoader(
 
 # get our model of choice, pretrained
 model = torchvision.models.alexnet(pretrained=True)
-model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 3)  # replace last stage with custom one
+model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 2)  # replace last stage with custom one
 device = torch.device('cuda')
 model = model.to(device)  # put model into GPU
 
 
 NUM_EPOCHS = 5
-BEST_MODEL_PATH = 'best_model_laptop_farm.pth'  # network file name
+BEST_MODEL_PATH = 'network_ball_model.pth'  # network file name
 best_accuracy = 0.0
 
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
